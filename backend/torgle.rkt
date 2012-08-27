@@ -13,15 +13,15 @@
                " "))
 
 (define (update-site site)
-  (lambda (link))
-  (if (null? (sql "SELECT url FROM sites "
-                  "WHERE url='" link "'"))
-      (run-query "INSERT INTO sites VALUES ('"
-                 link "', '', '" site "', 0, '')")
-      (run-query "UPDATE sites SET linked_from='" 
-                 (link-format (car-sql "SELECT linked_from FROM sites WHERE url='" 
-                                       link "'") site)
-                 "' WHERE url='" link "'"))))
+  (lambda (link)
+    (if (null? (sql "SELECT url FROM sites "
+                    "WHERE url='" link "'"))
+        (run-query "INSERT INTO sites VALUES ('"
+                   link "', '', '" site "', 0, '')")
+        (run-query "UPDATE sites SET linked_from='" 
+                   (link-format (car-sql "SELECT linked_from FROM sites WHERE url='" 
+                                         link "'") site)
+                   "' WHERE url='" link "'"))))
 
 (define (update-linked-from site links)
   (lambda (results)
