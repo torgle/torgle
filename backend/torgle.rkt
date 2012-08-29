@@ -1,23 +1,21 @@
 #lang racket
 
-;TODO: find a better way to make this not look so ugly with raw SQL code everywhere
-
 (require (planet jaz/mysql))
 (require (planet jaz/mysql:1/format))
 (require "tor-dl.rkt")
 
 (define (link-format links site)
-  (string-join (remove-duplicates 
-                (cons site
-                      (string-split links " ")))
-               " "))
+  (string-join 
+   (remove-duplicates 
+    (cons site (string-split links " ")))
+   " "))
 
 (define (update-site site)
   (lambda (link)
     (if (null? (sql "SELECT url FROM sites "
                     "WHERE url='" link "'"))
         (run-query "INSERT INTO sites VALUES ('"
-                   link "', '', '" site "', 0, '')")
+                   link "', '', '" site "', 0, '', '')")
         (run-query "UPDATE sites SET linked_from='" 
                    (link-format (car-sql "SELECT linked_from FROM sites WHERE url='" 
                                          link "'") site)
@@ -50,13 +48,17 @@
                                 "|\\[|\\]|\\{|\\}|\\||\\\\|,|\t|\n|\r).)*")
                  document))
 
+(define (notags code)
+  (regexp-replace* "<.*?>" "sdsd <center>dsdsd</center></body>" ""))
+
 (define (update-db site code)
   (update-linkers site (links code))
-  (if (equal? (car-sql "SELECT url FROM sites WHERE url='" site "'") 
-              site)
-      (run-query "UPDATE sites SET content=" code ", last_checked=" 
-                 (number->string(current-seconds)) " WHERE url='" site "'")
-      (run-query "INSERT INTO sites VALUES ("' site "', '', '', 0, " code "")))
+  (let ((searchable-code (notags code)))
+    (if (equal? (car-sql "SELECT url FROM sites WHERE url='" site "'") 
+                site)
+        (run-query "UPDATE sites SET content=" code ", searchable_content=" searchable-code 
+                   ", last_checked=" (number->string (current-seconds)) " WHERE url='" site "'")
+        (run-query "INSERT INTO sites VALUES ("' site "', '', '', 0, " code ", " searchable-code))))
 
 (define (newest-site)
   (car-sql "SELECT url FROM sites WHERE last_checked="
