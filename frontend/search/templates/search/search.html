@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>
+            Torgle
+        </title>
+    </head>
+    <body>
+        <a href="/torgle" style="text-decoration: none"><font color="green" size=6>Torgle</font></a>
+        <form action="/torgle/search/" method="get">
+            <input type='text' value="{{ query }}" name='query' />
+            <input type="submit" value="go" />
+        </form>
+        <p />
+        <hr />
+        <font size=2>Found {{ results_len }} results.</font><p />
+        {% for site in sites %}
+            <a href="http://{{ site.url }}">{{ site.title }}</a><br />
+            <i><font size=2>{{ site.url }}</font></i><br />
+            {{ site.description }}<p />
+        {% endfor %}
+
+        {% if not first_page %}
+            <a href="/torgle/search/?query={{ query }}&page={{ prev_page }}">&lt;&lt;last</a>
+        {% endif %}
+        {% for page in pages %}
+            <a href="/torgle/search/?query={{ query }}&page={{ page }}">
+                {% if page == curr_page %}
+                    <b>{{ page }}</b>
+                {% else %}
+                    {{ page }}
+                {% endif %}
+            </a>
+        {% endfor %}
+        {% if not final_page %}
+            <a href="/torgle/search/?query={{ query }}&page={{ next_page }}">next&gt;&gt;</a>
+        {% endif %}
+    </body>
+</html>
