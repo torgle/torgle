@@ -82,4 +82,4 @@
 
 (define (tor-dl site (host "localhost") (port 9050))
   (with-handlers ((exn:fail? (lambda (v) "")))
-                 (tor-dl site host port)))
+                 (attempt-dl site host port)))
