@@ -10,8 +10,7 @@
 
 (define (http-chunked-body in (content ""))
   (let ((line (read-line in)))
-    (if (equal? (string->number (string-trim line))
-                0)
+    (if (zero? (string->number (string-trim line)))
         content
         (http-chunked-body in (string-append content line)))))
 
