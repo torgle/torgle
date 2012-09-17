@@ -64,7 +64,7 @@
                    (string-join (cdr uri-vals) "/"))))
     (list domain path)))
 
-(define (tor-dl site (host "localhost") (port 9050))
+(define (attempt-dl site (host "localhost") (port 9050))
   (let-values (((in out) (tcp-connect "localhost" port)))
     (let* ((url  (url-parse   site))
            (site (first       url))
@@ -79,3 +79,7 @@
                out)
       (http-request site path out)
       (http-body in))))
+
+(define (tor-dl site (host "localhost") (port 9050))
+  (with-handlers ([exn:fail? (lambda (v) "")])
+                 (tor-dl site host port)))
