@@ -81,5 +81,5 @@
       (http-body in))))
 
 (define (tor-dl site (host "localhost") (port 9050))
-  (with-handlers ([exn:fail? (lambda (v) "")])
+  (with-handlers ((exn:fail? (lambda (v) "")))
                  (tor-dl site host port)))
